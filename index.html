@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Landing Page Generator</title>
+  <style>
+    body { font-family: Arial; max-width: 500px; margin: auto; padding: 20px; }
+    input, textarea { width: 100%; padding: 8px; margin: 8px 0; }
+    button { padding: 10px; width: 100%; background: black; color: white; border: none; }
+  </style>
+</head>
+<body>
+
+  <h2>Create Landing Page</h2>
+
+  <input id="title" placeholder="Product Title">
+
+  <input id="image" placeholder="Image URL">
+
+  <textarea id="desc" placeholder="Product Description"></textarea>
+
+  <textarea id="spec" placeholder="Specifications (one per line)"></textarea>
+
+  <input id="link" placeholder="Affiliate Link">
+
+  <button onclick="generate()">Generate Landing Page</button>
+
+<script>
+function generate() {
+
+  const data = {
+    title: document.getElementById("title").value,
+    image: document.getElementById("image").value,
+    desc: document.getElementById("desc").value,
+    spec: document.getElementById("spec").value,
+    link: document.getElementById("link").value
+  };
+
+  fetch("https://api.github.com/repos/deepkoley156/nazakatcollection/dispatches", {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer YOUR_TOKEN_HERE"
+    },
+    body: JSON.stringify({
+      event_type: "generate_page",
+      client_payload: data
+    })
+  });
+
+  alert("Landing Page Generating...");
+}
+</script>
+
+</body>
+</html>
