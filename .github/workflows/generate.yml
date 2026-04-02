@@ -1,0 +1,60 @@
+name: Generate Landing Page
+
+permissions:
+  contents: write
+
+on:
+  repository_dispatch:
+    types: [generate_page]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Landing Page
+        run: |
+          mkdir -p landing
+          
+          TITLE="${{ github.event.client_payload.title }}"
+          IMAGE="${{ github.event.client_payload.image }}"
+          DESC="${{ github.event.client_payload.desc }}"
+          SPEC="${{ github.event.client_payload.spec }}"
+          LINK="${{ github.event.client_payload.link }}"
+
+          SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
+
+          FILE="landing/$SLUG.html"
+
+          echo "<!DOCTYPE html>
+          <html>
+          <head>
+          <title>$TITLE</title>
+          <style>
+          body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
+          img { max-width: 100%; }
+          button { padding: 10px 20px; background: black; color: white; border: none; }
+          </style>
+          </head>
+          <body>
+          <h1>$TITLE</h1>
+          <img src='$IMAGE'>
+          <p>$DESC</p>
+          <h3>Specifications</h3>
+          <pre>$SPEC</pre>
+          <a href='$LINK' target='_blank'>
+          <button>Buy Now</button>
+          </a>
+          </body>
+          </html>" > $FILE
+
+      - name: Commit & Push
+        run: |
+          git config --global user.name "auto-bot"
+          git config --global user.email "auto@github.com"
+          git add .
+          git commit -m "New Landing Page"
+          git push
